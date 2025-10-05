@@ -14,7 +14,7 @@ public class ProcessingSaleService {
     private final ProcessingEvents processingEvents;
 
     public Long createSale() {
-        final Long saleId =  Long.valueOf(UUID.randomUUID().toString());
+        final Long saleId =  UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
         final SaleEntity saleEntity = new SaleEntity(saleId, "CREATED");
         processingEvents.createSale(saleEntity);
         return saleId;

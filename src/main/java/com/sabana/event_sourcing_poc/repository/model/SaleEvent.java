@@ -19,10 +19,10 @@ public class SaleEvent {
 
     @Column(name = "sale_id")
     private Long saleId;
-    @Column()
-    private String item;
+
     @Column()
     private String status;
+
     @Column(name = "last_event_date")
     private Instant lastEventDate;
 }

@@ -1,7 +1,6 @@
 CREATE TABLE IF NOT EXISTS sale_event (
                                           id BIGSERIAL PRIMARY KEY,
                                           sale_id BIGINT NOT NULL,
-                                          item TEXT NOT NULL,
                                           status TEXT NOT NULL,
                                           last_event_date TIMESTAMPTZ NOT NULL
 );
