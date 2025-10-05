@@ -1,5 +1,6 @@
 package com.sabana.event_sourcing_poc.repository.model;
 
+import com.sabana.event_sourcing_poc.domain.States;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,8 +21,9 @@ public class SaleEvent {
     @Column(name = "sale_id")
     private Long saleId;
 
+    @Enumerated(EnumType.STRING)
     @Column()
-    private String status;
+    private States status;
 
     @Column(name = "last_event_date")
     private Instant lastEventDate;

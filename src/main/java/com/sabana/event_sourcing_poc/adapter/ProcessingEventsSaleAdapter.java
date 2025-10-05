@@ -1,9 +1,9 @@
-package com.sabana.event_sourcing_poc.repository.adapter;
+package com.sabana.event_sourcing_poc.adapter;
 
 import com.sabana.event_sourcing_poc.domain.SaleEntity;
-import com.sabana.event_sourcing_poc.domain.aggregate.ProcessingEvents;
+import com.sabana.event_sourcing_poc.domain.gateway.ProcessingEvents;
 import com.sabana.event_sourcing_poc.repository.model.SaleEvent;
-import com.sabana.event_sourcing_poc.repository.write.SaveEventSale;
+import com.sabana.event_sourcing_poc.repository.SaveEventSale;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -34,5 +34,6 @@ public class ProcessingEventsSaleAdapter implements ProcessingEvents {
         saleEvent.setLastEventDate(Instant.now());
         saveEventSale.save(saleEvent);
     }
+
 
 }
