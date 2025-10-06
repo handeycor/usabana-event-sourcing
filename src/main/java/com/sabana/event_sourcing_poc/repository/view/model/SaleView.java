@@ -1,4 +1,4 @@
-package com.sabana.event_sourcing_poc.repository.model;
+package com.sabana.event_sourcing_poc.repository.view.model;
 
 import com.sabana.event_sourcing_poc.domain.States;
 import jakarta.persistence.*;
@@ -7,24 +7,23 @@ import lombok.Setter;
 
 import java.time.Instant;
 
+
 @Getter
 @Setter
 @Entity
-@Table(name = "sale_event")
-public class SaleEvent {
+@Table(name = "sale_view")
+public class SaleView {
 
     @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(name = "sale_id")
     private Long saleId;
 
     @Enumerated(EnumType.STRING)
-    @Column()
     private States status;
 
-    @Column(name = "last_event_date")
-    private Instant lastEventDate;
+    @Column(name = "created_at")
+    private Instant createdAt;
+
+    @Column(name = "last_updated_at")
+    private Instant lastUpdatedAt;
 }
