@@ -15,15 +15,16 @@ import java.time.Instant;
 public class SaleView {
 
     @Id
+    @Column(name = "id")
+    private Long id;
+
     @Column(name = "sale_id")
     private Long saleId;
 
     @Enumerated(EnumType.STRING)
+    @Column()
     private States status;
 
-    @Column(name = "created_at")
-    private Instant createdAt;
-
-    @Column(name = "last_updated_at")
-    private Instant lastUpdatedAt;
+    @Column(name = "last_event_date")
+    private Instant lastEventDate;
 }

@@ -1,15 +1,14 @@
 package com.sabana.event_sourcing_poc.controller;
 
-import com.sabana.event_sourcing_poc.domain.events.ProcessingSaleService;
-import com.sabana.event_sourcing_poc.entity.SaleEventEntity;
 import com.sabana.event_sourcing_poc.domain.States;
+import com.sabana.event_sourcing_poc.domain.events.ProcessingSaleService;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.Instant;
-import java.util.List;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @Log4j2
@@ -56,27 +55,6 @@ public class SaleEventController {
         } catch (Exception ex) {
             log.error("Error paymentSale", ex);
             return ResponseEntity.badRequest().body(ex.getMessage());
-        }
-    }
-
-    @GetMapping("/current")
-    public ResponseEntity<SaleEventEntity> getSaleState(@RequestParam(name = "sale_id") final Long saleId) {
-        try {
-            return ResponseEntity.ok(processingSaleService.getLastSaleState(saleId));
-        } catch (Exception ex) {
-            log.error("Error paymentSale", ex);
-            return ResponseEntity.noContent().build();
-        }
-    }
-
-    @GetMapping("/history")
-    public ResponseEntity<List<SaleEventEntity>> getSaleHistory(@RequestParam(name = "sale_id") final Long saleId,
-                                                                @RequestParam(name = "date") final Instant date) {
-        try {
-            return ResponseEntity.ok(processingSaleService.getSaleStatesBeforeDate(saleId, date));
-        } catch (Exception ex) {
-            log.error("Error paymentSale", ex);
-            return ResponseEntity.noContent().build();
         }
     }
 }

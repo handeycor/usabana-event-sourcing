@@ -1,12 +1,12 @@
 package com.sabana.event_sourcing_poc.adapter.view;
 
-import com.sabana.event_sourcing_poc.domain.States;
-import com.sabana.event_sourcing_poc.entity.SaleViewEntity;
+import com.sabana.event_sourcing_poc.entity.SaleEventEntity;
 import com.sabana.event_sourcing_poc.gateway.view.SalesViewGateway;
-import com.sabana.event_sourcing_poc.repository.view.SalesRepository;
+import com.sabana.event_sourcing_poc.repository.view.SalesViewRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,30 +14,39 @@ import java.util.Optional;
 @AllArgsConstructor
 public class SalesViewAdapter implements SalesViewGateway {
 
-    private final SalesRepository salesRepository;
+    private final SalesViewRepository salesViewRepository;
+
 
     @Override
-    public List<SaleViewEntity> getAllSales() {
-
-        return salesRepository.findAll()
-                .stream()
-                .map(sale -> new SaleViewEntity(sale.getSaleId(), sale.getStatus(), sale.getCreatedAt(), sale.getLastUpdatedAt()))
+    public List<SaleEventEntity> getAllEventsByIdSale(Long idSale) {
+        return salesViewRepository.findAllBySaleIdOrderByLastEventDateAsc(idSale).stream()
+                .map(saleView -> new SaleEventEntity(
+                        saleView.getSaleId(),
+                        saleView.getStatus(),
+                        saleView.getLastEventDate()
+                ))
                 .toList();
     }
 
     @Override
-    public Optional<SaleViewEntity> getSaleById(Long id) {
-        return salesRepository.findById(id)
-                .map(sale -> new SaleViewEntity(sale.getSaleId(), sale.getStatus(), sale.getCreatedAt(), sale.getLastUpdatedAt()));
-    }
+    public List<SaleEventEntity> getAllEventsByIdSaleBeforeDate(Long idSale, Instant date) {
 
-    @Override
-    public List<SaleViewEntity> getSalesByStatus(States status) {
-
-        return salesRepository.findByStatus(status)
-                .stream()
-                .map(sale -> new SaleViewEntity(sale.getSaleId(), sale.getStatus(), sale.getCreatedAt(), sale.getLastUpdatedAt()))
+        return salesViewRepository.findAllBySaleIdAndLastEventDateBeforeOrderByLastEventDateAsc(idSale, date).stream()
+                .map(saleView -> new SaleEventEntity(
+                        saleView.getSaleId(),
+                        saleView.getStatus(),
+                        saleView.getLastEventDate()
+                ))
                 .toList();
     }
 
+    @Override
+    public Optional<SaleEventEntity> getCurrentSaleState(Long idSale) {
+        return Optional.ofNullable(salesViewRepository.findFirstBySaleIdOrderByLastEventDateDesc(idSale))
+                .map(saleView -> new SaleEventEntity(
+                        saleView.getSaleId(),
+                        saleView.getStatus(),
+                        saleView.getLastEventDate()
+                ));
+    }
 }

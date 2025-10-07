@@ -1,15 +1,14 @@
 package com.sabana.event_sourcing_poc.controller;
 
-import com.sabana.event_sourcing_poc.domain.States;
 import com.sabana.event_sourcing_poc.domain.view.SalesViewService;
+import com.sabana.event_sourcing_poc.entity.SaleEventEntity;
 import com.sabana.event_sourcing_poc.entity.SaleViewEntity;
 import lombok.AllArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -19,19 +18,27 @@ public class SaleViewController {
 
     private final SalesViewService salesViewService;
 
-    @GetMapping("/all")
-    public ResponseEntity<List<SaleViewEntity>> getAllSales() {
-        return ResponseEntity.ok(salesViewService.getAllSales());
+    @GetMapping("/{id}/states")
+    public ResponseEntity<List<SaleEventEntity>> getAllSaleStatesById(@PathVariable Long id) {
+        return ResponseEntity.ok(salesViewService.getAllSaleStatesById(id));
     }
 
-    @GetMapping("/state")
-    public ResponseEntity<List<SaleViewEntity>> getSalesByStatus(@RequestParam(name = "status") final States status) {
-        return ResponseEntity.ok(salesViewService.getSalesByStatus(status));
+    @GetMapping("/{id}/states/before")
+    public ResponseEntity<List<SaleEventEntity>> getSaleStatesBeforeDate(
+            @PathVariable Long id,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant date) {
+        return ResponseEntity.ok(salesViewService.getSaleStatesBeforeDate(id, date));
     }
 
-    @GetMapping("/id")
-    public ResponseEntity<SaleViewEntity> getSaleById(@RequestParam(name = "id") final Long id) {
-        return ResponseEntity.ok(salesViewService.getSaleById(id));
+    @GetMapping("/{id}/last")
+    public ResponseEntity<SaleEventEntity> getLastSaleState(@PathVariable Long id) {
+        return ResponseEntity.ok(salesViewService.getLastSaleState(id));
     }
 
+    @GetMapping("/{id}/last/before")
+    public ResponseEntity<SaleViewEntity> getSaleStateAsOfDate(
+            @PathVariable Long id,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant date) {
+        return ResponseEntity.ok(salesViewService.getSaleStateAsOfDate(id, date));
+    }
 }
