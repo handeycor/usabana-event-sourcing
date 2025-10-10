@@ -2,15 +2,12 @@ package com.sabana.event_sourcing_poc.domain.events;
 
 
 import com.sabana.event_sourcing_poc.domain.States;
+import com.sabana.event_sourcing_poc.domain.view.SalesViewService;
 import com.sabana.event_sourcing_poc.entity.SaleEventEntity;
 import com.sabana.event_sourcing_poc.gateway.event.ProcessingEvents;
-import com.sabana.event_sourcing_poc.gateway.event.ReadSaleEvents;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -18,7 +15,7 @@ import java.util.UUID;
 public class ProcessingSaleService {
 
     private final ProcessingEvents processingEvents;
-    private final ReadSaleEvents readSaleEvents;
+    private final SalesViewService salesViewService;
 
     public Long createSale() {
         final Long saleId = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
@@ -28,13 +25,10 @@ public class ProcessingSaleService {
     }
 
     public void saveSaleState(final Long saleId, final States status) {
-        final Optional<SaleEventEntity> lastStateOfSale = readSaleEvents.getLastStateOfSale(saleId);
+        final SaleEventEntity lastStateOfSale = salesViewService.getLastSaleState(saleId);
 
-        if (lastStateOfSale.isEmpty()) {
-            throw new IllegalArgumentException("SaleEntity with id " + saleId + " does not exist");
-        }
 
-        final String nextStateOfCurrent = lastStateOfSale.get().getStatus().getNextState();
+        final String nextStateOfCurrent = lastStateOfSale.getStatus().getNextState();
         if (nextStateOfCurrent == null) {
             throw new IllegalArgumentException("SaleEntity with id " + saleId + " has complete");
         }
@@ -47,22 +41,5 @@ public class ProcessingSaleService {
 
         processingEvents.changeStateOfSale(saleEventEntity);
     }
-
-    public List<SaleEventEntity> getSaleStatesBeforeDate(final Long saleId, final Instant date) {
-        List<SaleEventEntity> saleEntities = readSaleEvents.getSaleStatesBeforeDate(saleId, date);
-        if (saleEntities.isEmpty()) {
-            throw new IllegalArgumentException("SaleEntity with id " + saleId + " and date " + date + " does not exist");
-        }
-        return saleEntities;
-    }
-
-    public SaleEventEntity getLastSaleState(final Long saleId) {
-        Optional<SaleEventEntity> saleEntity = readSaleEvents.getLastStateOfSale(saleId);
-        if (saleEntity.isEmpty()) {
-            throw new IllegalArgumentException("SaleEntity with id " + saleId + " does not exist");
-        }
-        return saleEntity.get();
-    }
-
 
 }
